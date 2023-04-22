@@ -6,6 +6,7 @@ from datetime import datetime
 from peewee import *
 import requests
 import config
+import sqlite3
 
 bot = telebot.TeleBot(config.TOKEN)
 
@@ -117,6 +118,59 @@ def handle_callback_query(call):
         bot.register_next_step_handler(call.message, upload_file)
     else:
         bot.send_message(chat_id, 'Неверный вариант. Пожалуйста, выберите еще раз.')
+
+
+@bot.message_handler(commands=['help'])
+def handle_help(message):
+    """
+    Обработка команды /help от пользователя.
+    """
+    chat_id = message.chat.id
+    user_id = message.from_user.id
+    logging.info(f"User ID: {user_id}, Chat ID: {chat_id}, Command: /help")
+    bot.send_message(
+    chat_id, 'Для начала работы введите команду /start и выберите одну из опций.'
+    )
+
+
+@bot.message_handler(commands=['about'])
+def handle_about(message):
+    """
+    Обработка команды /about от пользователя.
+    """
+    chat_id = message.chat.id
+    user_id = message.from_user.id
+    logging.info(f"User ID: {user_id}, Chat ID: {chat_id}, Command: /about")
+    bot.send_message(
+    chat_id, 'Личный финансовый бот "CashBot". Автор: Дмитрий.'
+    )
+
+
+@bot.message_handler(commands=['feedback'])
+def handle_feedback(message):
+    """
+    Обработка команды /feedback от пользователя.
+    """
+    chat_id = message.chat.id
+    user_id = message.from_user.id
+    logging.info(f"User ID: {user_id}, Chat ID: {chat_id}, Command: /feedback")
+    bot.send_message(
+    chat_id, 'Введите свой отзыв:'
+    )
+    bot.register_next_step_handler(message, process_feedback)
+
+
+def process_feedback(message):
+    """
+    Обработка отзыва пользователя.
+    """
+    chat_id = message.chat.id
+    user_id = message.from_user.id
+    feedback_text = message.text
+    logging.info(f"User ID: {user_id}, Chat ID: {chat_id}, Feedback: {feedback_text}")
+    bot.send_message(
+    chat_id, 'Спасибо за ваш отзыв! Он был отправлен разработчикам.'
+    )
 
 
 def add_expense_amount(message):
