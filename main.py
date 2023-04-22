@@ -31,12 +31,21 @@ def get_currency_rate(base_currency, target_currency):
     """
     Получите курс обмена валюты из API.
     """
-    response = requests.get(
-        f'{config.CURRENCY_API_BASE_URL}?access_key={config.CURRENCY_API_KEY}&base={base_currency}'
-    )
-    data = response.json()
-    rate = data['rates'][target_currency]
-    return rate
+    url = f"https://api.apilayer.com/exchangerates_data/latest?symbols={target_currency}&base={base_currency}"
+
+    payload = {}
+    headers = {
+        "apikey": "hXF8NGC8I79wAbTalbhSQUah00JERYDv"
+    }
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+
+    status_code = response.status_code
+    if status_code == 200:
+        result = response.json()
+        return result.get('rates', {}).get(target_currency)
+    else:
+        return None
 
 
 def send_inline_keyboard(chat_id, text, options):
@@ -170,10 +179,10 @@ def convert_currency_target_currency(message, amount, base_currency):
     target_currency = message.text.upper()
     try:
         rate = get_currency_rate(base_currency, target_currency)
-        converted_amount = amount * rate
+        converted_amount = float(amount * rate)
         bot.send_message(
             chat_id,
-            f'{amount} {base_currency} is equivalent to {converted_amount} {target_currency}',
+            f'{amount} {base_currency} эквивалентно {converted_amount} {target_currency}',
         )
     except requests.exceptions.RequestException:
         bot.send_message(chat_id, 'Не удалось получить курс обмена валюты. Пожалуйста, повторите попытку позже.')
