@@ -52,6 +52,7 @@ def send_inline_keyboard(chat_id, text, options):
     """
     Отправьте пользователю сообщение со встроенной клавиатурой.
     """
+
     keyboard = types.InlineKeyboardMarkup(row_width=2)
     for option in options:
         callback_button = types.InlineKeyboardButton(
